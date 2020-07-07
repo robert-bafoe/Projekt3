@@ -37,12 +37,16 @@ for key in okresy:
     zvoleneOkresy.update({key : okresy.get(key)})
 
 j = 1
-while j < len(zvoleneOkresy):
-    sestavKod = prefix + "0" + str(j)
+while j <= len(zvoleneOkresy):
+    sestavKod = prefix + str(j).zfill(2)
     print(f"{j} - {zvoleneOkresy.get(sestavKod)}")
     j += 1
 
 volba2 = input("Zvol okres: ")
-finalKod = prefix + "0" + volba2
+finalKod = prefix + volba2.zfill(2)
+odkazOkres = funkce.sestav_odkaz(volba,finalKod)
+mestaOdkazy = funkce.get_mesta_kody(odkazOkres)
 
-print(finalKod)
+for mesto in mestaOdkazy:
+    vysledky = funkce.get_vysledky(mestaOdkazy.get(mesto),mesto)
+    print(vysledky)
