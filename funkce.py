@@ -72,7 +72,6 @@ def get_kody(url):
 
     return mesta_kody
 
-
 def get_vysledky(kod,mesto,finalUrl):
     URL = 'https://volby.cz/pls/ps2017nss/' + finalUrl
     page = requests.get(URL)
@@ -80,28 +79,26 @@ def get_vysledky(kod,mesto,finalUrl):
     volici_data = soup.findAll('td', {"headers": "sa2"})
     vydane_data = soup.findAll('td', {"headers": "sa3"})
     platne_data = soup.findAll('td', {"headers": "sa6"})
-    tabulka1 = soup.findAll('td', {"headers": "t1sb3"})
-    tabulka2 = soup.findAll('td', {"headers": "t2sb3"})
-    souhrn = []
-    souhrn.append(kod)
-    souhrn.append((mesto))
+    strany_data = soup.findAll('td', {"headers": re.compile('.t*sa1.*sb2')})
+    hlasy_data = soup.findAll('td', {"headers": re.compile('.t*sa2.*sb3')})
+    souhrn = {}
+    souhrn.update({"kód obce" : kod})
+    souhrn.update({"název obce" : mesto})
     for x in volici_data:
         volici = x.text
-        souhrn.append(volici.replace('\xa0', ''))
+        souhrn.update({"voliči v seznamu" : volici.replace('\xa0', '')})
 
     for x in vydane_data:
-        souhrn.append(x.text.replace('\xa0', ''))
+        souhrn.update({"vydané obálky" : x.text.replace('\xa0', '')})
 
     for x in platne_data:
-        souhrn.append(x.text.replace('\xa0', ''))
+        souhrn.update({"platné hlasy" : x.text.replace('\xa0', '')})
 
-    for x in tabulka1:
-        souhrn.append(x.text.replace('\xa0', ''))
-
-    for x in tabulka2:
-        souhrn.append(x.text.replace('\xa0', ''))
+    for strana,hlas in zip(strany_data,hlasy_data):
+      souhrn.update({strana.text:hlas.text.replace('\xa0', '')})
 
     return souhrn
+
 
 def get_title():
     URL = 'https://volby.cz/pls/ps2017nss/ps2?xjazyk=CZ'

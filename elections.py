@@ -37,12 +37,22 @@ jmenoSouboru = input("Zadej název výstupního souboru (bez koncovky .csv): ")
 soubor = jmenoSouboru + ".csv"
 odkazOkres = funkce.sestav_odkaz(volbaKraje,finalKod)
 mestaOdkazy = funkce.get_kody(odkazOkres)
-nazvySloupcu = funkce.get_title()
+vsechnyVysledky = []
+titulky = []
 
-with open(soubor, 'w', newline='') as myfile:
-    wr = csv.writer(myfile,delimiter=';')
-    wr.writerow(nazvySloupcu)
-    for klic in mestaOdkazy:
-        vysledky = funkce.get_vysledky(klic,mestaOdkazy[klic].get("mesto"),mestaOdkazy[klic].get("odkaz"))
-        wr.writerow(vysledky)
-        print(vysledky)
+for klic in mestaOdkazy:
+    vysledky = funkce.get_vysledky(klic,mestaOdkazy[klic].get("mesto"),mestaOdkazy[klic].get("odkaz"))
+    vsechnyVysledky.append(vysledky)
+
+for zaznam in vsechnyVysledky:
+    nazvy = list(zaznam.keys())
+    titulky.append(nazvy)
+
+result = sum(titulky, [])
+nazvySloupcu = list(dict.fromkeys(result))
+
+with open(soubor, 'w') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=nazvySloupcu)
+    writer.writeheader()
+    for data in vsechnyVysledky:
+        writer.writerow(data)
