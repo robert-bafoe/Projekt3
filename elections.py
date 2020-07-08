@@ -1,23 +1,8 @@
 import funkce
+import csv
+from funkce import KRAJE,ODDELOVAC
 
-ODDELOVAC = "=" * 65
-KRAJE = {1 : {"nazev":"Hlavní město Praha","kod":"11"},
-         2 : {"nazev":"Středočeský kraj","kod":"21"},
-         3 : {"nazev":"Jihočeský kraj","kod":"31"},
-         4 : {"nazev":"Plzeňský kraj","kod":"32"},
-         5 : {"nazev":"Karlovarský kraj","kod":"41"},
-         6 : {"nazev":"Ústecký kraj","kod":"42"},
-         7 : {"nazev":"Liberecký kraj","kod":"51"},
-         8 : {"nazev":"Královéhradecký kraj","kod":"52"},
-         9 : {"nazev":"Pardubický kraj","kod":"53"},
-         10 : {"nazev":"Kraj Vysočina","kod":"61"},
-         11 : {"nazev":"Jihomoravský kraj","kod":"62"},
-         12 : {"nazev":"Olomoucký kraj","kod":"71"},
-         13 : {"nazev":"Zlínský kraj","kod":"72"},
-         14 : {"nazev":"Moravskoslezský kraj","kod":"81"}
-         }
-
-okresy = funkce.get_seznam_mest()
+okresy = funkce.get_seznam_okresu()
 
 print("Vítej v mini scrapping app!")
 print(ODDELOVAC)
@@ -27,9 +12,9 @@ for kraj in KRAJE:
 
 print(ODDELOVAC)
 
-volba = int(input("Zvol kraj: "))
+volbaKraje = int(input("Zvol kraj: "))
 zvoleneOkresy = {}
-prefix = KRAJE[volba]["kod"]
+prefix = KRAJE[volbaKraje]["kod"]
 print(ODDELOVAC)
 
 for key in okresy:
@@ -42,11 +27,22 @@ while j <= len(zvoleneOkresy):
     print(f"{j} - {zvoleneOkresy.get(sestavKod)}")
     j += 1
 
-volba2 = input("Zvol okres: ")
-finalKod = prefix + volba2.zfill(2)
-odkazOkres = funkce.sestav_odkaz(volba,finalKod)
-mestaOdkazy = funkce.get_mesta_kody(odkazOkres)
+if volbaKraje > 1:
+    volbaOkresu = input("Zvol okres: ")
+    finalKod = prefix + volbaOkresu.zfill(2)
+else:
+    finalKod = "1100"
 
-for mesto in mestaOdkazy:
-    vysledky = funkce.get_vysledky(mestaOdkazy.get(mesto),mesto)
-    print(vysledky)
+jmenoSouboru = input("Zadej název výstupního souboru (bez koncovky .csv): ")
+soubor = jmenoSouboru + ".csv"
+odkazOkres = funkce.sestav_odkaz(volbaKraje,finalKod)
+mestaOdkazy = funkce.get_kody(odkazOkres)
+nazvySloupcu = funkce.get_title()
+
+with open(soubor, 'w', newline='') as myfile:
+    wr = csv.writer(myfile,delimiter=';')
+    wr.writerow(nazvySloupcu)
+    for klic in mestaOdkazy:
+        vysledky = funkce.get_vysledky(klic,mestaOdkazy[klic].get("mesto"),mestaOdkazy[klic].get("odkaz"))
+        wr.writerow(vysledky)
+        print(vysledky)
