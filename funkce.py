@@ -44,7 +44,6 @@ def sestav_odkaz(kraj,okres):
     odkaz = "https://volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj="+ str(kraj) +"&xnumnuts=" + str(okres)
     return odkaz
 
-
 def get_kody(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -98,16 +97,3 @@ def get_vysledky(kod,mesto,finalUrl):
       souhrn.update({strana.text:hlas.text.replace('\xa0', '')})
 
     return souhrn
-
-
-def get_title():
-    URL = 'https://volby.cz/pls/ps2017nss/ps2?xjazyk=CZ'
-    page = requests.get(URL)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    strany_data = soup.findAll('td',{"headers" : re.compile('.t*sa1.*sb2')})
-    title = ["kód obce", "název obce", "voliči v seznamu", "vydané obálky", "platné hlasy"]
-    for x in strany_data:
-      strana = x.text
-      title.append(strana)
-
-    return title
